@@ -82,13 +82,13 @@
 
       let msg = `Total marginal cost for this ${result["Mode"] === "charge" ? "charging" : "discharging"}:
 `;
-      msg += `- Degradation Cost: €${result["Degradation Cost"]}
+      msg += `- Degradation Cost: €${result["Degradation Cost (€)"]}
 `;
-      msg += `- Energy Loss Cost: €${result["Energy Loss Cost"]}
+      msg += `- Energy Loss Cost: €${result["Energy Loss Cost (€)"]}
 `;
-      msg += `- O&M Cost: €${result["O&M Cost"]}
+      msg += `- O&M Cost: €${result["O&M Cost (€)"]}
 `;
-      msg += `- Auxiliary Cost: €${result["Auxiliary Cost"]}
+      msg += `- Auxiliary Cost: €${result["Auxiliary Cost (€)"]}
 
 `;
       msg += `Total Cost: €${result["Total Marginal Cost (€)"]}`;
