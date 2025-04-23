@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BESS Cost Platform</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .button-alt {
+      background-color: #28a745;
+    }
+    .button-alt:hover {
+      background-color: #1e7e34;
+    }
+    .button-danger {
+      background-color: #dc3545;
+    }
+    .button-danger:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to BESS Cost Platform</h1>
+    <p>Select operating mode and input SoC range:</p>
+
+    <label>Mode:
+      <select id="mode">
+        <option value="charge">Charging</option>
+        <option value="discharge">Discharging</option>
+      </select>
+    </label>
+
+    <label>SoC Start (0–1): <input type="number" step="0.01" id="soc_start" value="0.8"></label>
+    <label>SoC End (0–1): <input type="number" step="0.01" id="soc_end" value="0.2"></label>
+
+    <div>
+      <button onclick="location.href='/static/bms.html'" class="button-alt">BMS Parameters</button>
+      <button onclick="location.href='/static/market.html'" class="button-alt">Market Parameters</button>
+      <button onclick="location.href='/static/model.html'" class="button-alt">Model Defaults</button>
+    </div>
+
+    <button onclick="calculateAll()">Calculate All</button>
+    <pre id="result">Results will appear here...</pre>
+
+    <div style="margin-top: 2em;">
+      <button onclick="location.href='/static/demo.html'" class="button-danger">Try API Demo</button>
+    </div>
+  </div>
+
+  <script>
+    async function calculateAll() {
+      const mode = document.getElementById("mode").value;
+      const soc_start = parseFloat(document.getElementById("soc_start").value);
+      const soc_end = parseFloat(document.getElementById("soc_end").value);
+
+      const bms = JSON.parse(localStorage.getItem("bms_data") || "{}");
+      const market = JSON.parse(localStorage.getItem("market_data") || "{}");
+      const model = JSON.parse(localStorage.getItem("model_data") || "{}");
+
+      const data = {
+        mode: mode,
+        soc_start: soc_start,
+        soc_end: soc_end,
+        efficiency_ch: parseFloat(bms.efficiency_ch || 0.95),
+        efficiency_dis: parseFloat(bms.efficiency_dis || 0.9),
+        voltage: parseFloat(bms.voltage || 700),
+        battery_capacity: parseFloat(model.battery_capacity || 10000),
+        cEnergy: parseFloat(market.cEnergy || 0.12),
+        cCapacity: parseFloat(model.cCapacity || 700),
+        OM_total: parseFloat(model.OM_total || 50000)
+      };
+
+      const res = await fetch("/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+      let msg = `Total marginal cost for this ${result["Mode"] === "charge" ? "charging" : "discharging"}:
+`;
+      msg += `- Degradation Cost: €${result["Degradation Cost"]}
+`;
+      msg += `- Energy Loss Cost: €${result["Energy Loss Cost"]}
+`;
+      msg += `- O&M Cost: €${result["O&M Cost"]}
+`;
+      msg += `- Auxiliary Cost: €${result["Auxiliary Cost"]}
+
+`;
+      msg += `Total Cost: €${result["Total Marginal Cost (€)"]}`;
+
+      document.getElementById("result").textContent = msg;
+    }
+  </script>
+</body>
+</html>

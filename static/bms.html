@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BMS Data Input</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>BMS Parameters</h1>
+    <label>Charging Efficiency: <input type="number" step="0.01" id="efficiency_ch" placeholder="e.g., 0.95"></label>
+    <label>Discharging Efficiency: <input type="number" step="0.01" id="efficiency_dis" placeholder="e.g., 0.9"></label>
+    <label>Battery Capacity (kWh): <input type="number" id="battery_capacity" value="10000"></label>
+
+    <button onclick="saveBMS()">Save and Return</button>
+  </div>
+  <script>
+    function saveBMS() {
+      const bms = {
+        efficiency_ch: document.getElementById("efficiency_ch").value,
+        efficiency_dis: document.getElementById("efficiency_dis").value,
+        battery_capacity: document.getElementById("battery_capacity").value,
+      };
+      localStorage.setItem("bms_data", JSON.stringify(bms));
+      window.location.href = "/";
+    }
+
+    window.onload = function() {
+      const stored = JSON.parse(localStorage.getItem("bms_data"));
+      if (stored) {
+        document.getElementById("battery_capacity").value = stored.battery_capacity || "";
+        document.getElementById("efficiency_ch").value = stored.efficiency_ch || "";
+        document.getElementById("efficiency_dis").value = stored.efficiency_dis || "";
+        document.getElementById("battery_capacity").value = stored.battery_capacity || "";
+
+      }
+    };
+  </script>
+</body>
+</html>

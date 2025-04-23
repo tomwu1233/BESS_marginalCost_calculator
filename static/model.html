@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model Parameters</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Model Defaults</h1>
+    <label>Battery Capacity Cost cCapacity (€/kWh): <input type="number" id="cCapacity" value="700"></label>
+    <label>Total O&M Cost (€): <input type="number" id="OM_total" value="500000"></label>
+    <button onclick="saveModel()">Save and Return</button>
+  </div>
+  <script>
+    function saveModel() {
+      const model = {
+        cCapacity: document.getElementById("cCapacity").value,
+        OM_total: document.getElementById("OM_total").value
+      };
+      localStorage.setItem("model_data", JSON.stringify(model));
+      window.location.href = "/";
+    }
+
+    window.onload = function() {
+      const stored = JSON.parse(localStorage.getItem("model_data"));
+      if (stored) {
+        document.getElementById("cCapacity").value = stored.cCapacity || "";
+        document.getElementById("OM_total").value = stored.OM_total || "";
+      }
+    };
+  </script>
+</body>
+</html>

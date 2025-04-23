@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BESS API Demo</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    textarea {
+      width: 100%;
+      height: 160px;
+      margin-bottom: 1em;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BESS Degradation Cost API Demo</h1>
+    <p>Test the API by editing the input below and clicking <b>Send Request</b>.</p>
+
+    <h3>Request JSON</h3>
+    <textarea id="json-input">
+{
+  "mode": "charge",
+  "soc_start": 0.8,
+  "soc_end": 0.2,
+  "efficiency_ch": 0.95,
+  "efficiency_dis": 0.9,
+  "voltage": 700,
+  "battery_capacity": 10000,
+  "cEnergy": 0.12,
+  "cCapacity": 700,
+  "OM_total": 50000
+}
+    </textarea>
+
+    <button onclick="sendRequest()">Send Request</button>
+
+    <h3>API Response(JSON output)</h3>
+    <pre id="json-output">Response will appear here...</pre>
+  </div>
+
+  <script>
+    async function sendRequest() {
+      const input = document.getElementById("json-input").value;
+
+      try {
+        const res = await fetch("/calculate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: input
+        });
+
+        const result = await res.json();
+        document.getElementById("json-output").textContent = JSON.stringify(result, null, 2);
+      } catch (error) {
+        document.getElementById("json-output").textContent = "⚠️ Error: " + error;
+      }
+    }
+  </script>
+</body>
+</html>
